@@ -79,3 +79,78 @@ higgsfield account status              # проверить, авторизов�
 2. **Через Refero MCP** — у сервиса есть свой MCP-сервер, который подключается к Cursor, Claude, Windsurf и другим AI-инструментам, чтобы агент сам искал и изучал дизайн-системы перед тем, как верстать интерфейс. Если понадобится — можно подключить этот MCP-сервер отдельно (сейчас он не подключён к этой сессии).
 
 На момент написания сайт в статусе Beta, цены/платный доступ на сайте не указаны — похоже, каталог просматривается свободно.
+
+---
+
+## ECC (Engineering Control Center) — «операционная система» для Claude Code
+
+[github.com/affaan-m/ECC](https://github.com/affaan-m/ECC) — большой open-source плагин-набор для Claude Code (и ещё 10+ других агентских харнессов, но заточен в первую очередь под Claude Code). Даёт готовый инженерный процесс `план → тесты → реализация → ревью → верификация → память → улучшение` вместо того, чтобы каждый раз объяснять это Claude заново.
+
+**Работает с обычной подпиской на Claude** — это не отдельный API-сервис, а надстройка над самим `claude` CLI. Ключей/биллинга сверх того, что уже нужно Claude Code, не требует. Раздел "Self-Hosted Models" в их README про кастомные шлюзы — опционален, для тебя не актуален.
+
+**Что внутри:** 68 сабагентов (planner, code-reviewer, security-reviewer, build-error-resolver и т.д.), 286 skills (TDD, security, frontend, data, ML, и т.д.), 94 команды-шорткаты, хуки (например блокирует опасные `rm`/`git checkout --force` до выполнения — GateGuard), и rules (всегда-загруженные стандарты по языку).
+
+### Требования
+
+- Claude Code CLI версии **2.1.0 или новее**. Проверить: `claude --version`.
+
+### Установка (делать в СВОЁМ Claude Code — на своей машине, не в одноразовой облачной сессии)
+
+Плагин ставится глобально в `~/.claude`, поэтому смысл есть только там, где Claude Code у тебя постоянно живёт (свой ноутбук/сервер). Внутри своей сессии Claude Code выполни:
+
+```
+/plugin marketplace add https://github.com/affaan-m/ECC
+/plugin install ecc@ecc
+```
+
+Это ставит агентов, skills, команды и хуки одним махом. **Дальше ничего вручную докручивать не нужно** — их README явно просит не смешивать плагин-путь с ручной установкой (`./install.sh --profile full`), иначе всё задублируется.
+
+Проверить, что встало:
+
+```
+/plugin list ecc@ecc
+```
+
+Опционально — «rules» (языковые стандарты) плагином не разносятся, их нужно скопировать руками отдельно, если нужны:
+
+```bash
+git clone https://github.com/affaan-m/ECC.git
+cd ECC
+mkdir -p ~/.claude/rules/ecc
+cp -R rules/common ~/.claude/rules/ecc/
+cp -R rules/typescript ~/.claude/rules/ecc/   # заменить на свой стек (python, golang, swift, php...)
+```
+
+### Как этим пользоваться каждый день
+
+| Что делаю | Команда |
+|---|---|
+| Начать новую фичу | `/ecc:plan "описание фичи"`, затем skill `tdd-workflow` |
+| Чиню баг | сначала пишу тест, который его воспроизводит, дальше `tdd-workflow` |
+| Прошу проверить код | `/code-review` (ревью со «свежим» контекстом) |
+| Чиню упавшую сборку | `/build-fix` |
+| Чищу мёртвый код | `/refactor-clean` |
+| Проверяю, не забит ли контекст | `/context-budget` |
+| Заканчиваю долгую сессию | `/save-session` или `/learn-eval` |
+| Продолжаю позже | `/resume-session` |
+| Проверяю безопасность своих агент-конфигов | `/security-scan` или `npx -y ecc-agentshield scan --path .` |
+
+Типичная цепочка на фичу:
+```
+/ecc:plan "Add user authentication with OAuth"   -> planner делает план реализации
+tdd-workflow (skill)                              -> tdd-guide заставляет писать тесты сначала
+/code-review                                      -> code-reviewer проверяет результат
+```
+
+### Важно по безопасности
+
+Ставить ТОЛЬКО из официальных источников — сам GitHub-репозиторий `affaan-m/ECC`, npm-пакеты `ecc-universal`/`ecc-agentshield`, или их официальный GitHub App. Авторы прямо предупреждают: сторонние зеркала/копии могут содержать вредоносный код.
+
+### Если что-то пошло не так
+
+```bash
+node scripts/ecc.js doctor      # диагностика
+node scripts/ecc.js repair      # почини
+node scripts/uninstall.js --dry-run   # что удалится
+node scripts/uninstall.js       # удалить
+```
