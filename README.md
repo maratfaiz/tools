@@ -90,36 +90,34 @@ higgsfield account status              # проверить, авторизов�
 
 **Что внутри:** 68 сабагентов (planner, code-reviewer, security-reviewer, build-error-resolver и т.д.), 286 skills (TDD, security, frontend, data, ML, и т.д.), 94 команды-шорткаты, хуки (например блокирует опасные `rm`/`git checkout --force` до выполнения — GateGuard), и rules (всегда-загруженные стандарты по языку).
 
-### Требования
+### Установлено прямо в этот репозиторий
 
-- Claude Code CLI версии **2.1.0 или новее**. Проверить: `claude --version`.
+ECC уже стоит здесь, project-local, под `.claude/` (профиль `developer`, таргет `claude-project` — официальный установщик ECC, не плагин-путь). Это значит: как только Claude Code открывает этот репозиторий, все агенты/skills/команды/rules из ECC подхватываются автоматически, ничего доустанавливать не нужно.
 
-### Установка (делать в СВОЁМ Claude Code — на своей машине, не в одноразовой облачной сессии)
+Что реально приехало (807 файлов): агенты (`.claude/agents/`), skills (`.claude/skills/`), команды (`.claude/commands/`), rules по всем языкам/фреймворкам (`.claude/rules/ecc/*` — common, typescript, python, golang, react, vue и т.д.), конфиг хуков (`.claude/hooks/`) и MCP-шаблоны (`.claude/mcp-configs/`).
 
-Плагин ставится глобально в `~/.claude`, поэтому смысл есть только там, где Claude Code у тебя постоянно живёт (свой ноутбук/сервер). Внутри своей сессии Claude Code выполни:
+**Важный нюанс про хуки:** файл `.claude/hooks/hooks.json` физически лежит в репозитории, но сам по себе Claude Code его не подхватывает — project-local `claude-project`-установка не регистрирует хуки как активный runtime (это отличие от установки через `/plugin`, где Claude Code 2.1+ грузит `hooks.json` автоматически по конвенции). То есть агенты/skills/команды/rules работают сразу, а автоматические проверки (блокировка опасных команд, автоформат после правок и т.д.) — нет. Если понадобятся именно они, это отдельный шаг с официальным установщиком на своей машине (`./install.sh --target claude --modules hooks-runtime`) — см. `.claude/hooks/README.md`.
+
+### Установка на своей машине (если Claude Code у тебя работает не только здесь)
+
+Этот репозиторий — временная облачная сессия, она удаляется. Чтобы ECC был у тебя постоянно (на ноутбуке), там нужно поставить его отдельно — либо рекомендуемым plugin-путём (2 команды прямо в Claude Code):
 
 ```
 /plugin marketplace add https://github.com/affaan-m/ECC
 /plugin install ecc@ecc
 ```
 
-Это ставит агентов, skills, команды и хуки одним махом. **Дальше ничего вручную докручивать не нужно** — их README явно просит не смешивать плагин-путь с ручной установкой (`./install.sh --profile full`), иначе всё задублируется.
-
-Проверить, что встало:
-
-```
-/plugin list ecc@ecc
-```
-
-Опционально — «rules» (языковые стандарты) плагином не разносятся, их нужно скопировать руками отдельно, если нужны:
+либо так же, как здесь — вручную скачать репозиторий и прогнать установщик:
 
 ```bash
 git clone https://github.com/affaan-m/ECC.git
 cd ECC
-mkdir -p ~/.claude/rules/ecc
-cp -R rules/common ~/.claude/rules/ecc/
-cp -R rules/typescript ~/.claude/rules/ecc/   # заменить на свой стек (python, golang, swift, php...)
+npm install
+node scripts/install-apply.js --target claude --profile developer   # глобально в ~/.claude
+# или --target claude-project, если хочешь project-local как здесь
 ```
+
+Проверить версию Claude Code перед установкой (нужно 2.1.0+): `claude --version`.
 
 ### Как этим пользоваться каждый день
 
