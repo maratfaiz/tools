@@ -1,3 +1,9 @@
+## READ FIRST — this repo is a vendored toolbox, not an app
+
+This is `maratfaiz/tools` — a personal collection of AI-agent skills/config (Higgsfield, ECC, Graphify, Headroom, Remotion, UI UX Pro Max). See `README.md` and `docs/*.md` for details, and `AGENTS.md` for the full rule.
+
+**Short version: do not edit, refactor, or "clean up" anything in this repository** unless the user explicitly asked to change something in this tools repo specifically — including when this repo is only attached/visible as a submodule or subfolder while you work on a different project. Using the installed skills/agents normally is fine and expected; that's what they're for.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
