@@ -12,6 +12,7 @@
 | **Graphify** | превращает кодовую базу в граф знаний — запросы вместо grep | [docs/graphify.md](docs/graphify.md) |
 | **Remotion** | видео из React-кода — субтитры, шаблонные ролики, дата-визуализации | [docs/remotion.md](docs/remotion.md) |
 | **UI UX Pro Max** | дизайн-интеллект для интерфейсов — стили, палитры, типографика под тип продукта | [docs/ui-ux-pro-max.md](docs/ui-ux-pro-max.md) |
+| **Phoenix Security** | AppSec-ревью, SAST-правила, threat intel, готовность к продакшену | [docs/phoenix-security.md](docs/phoenix-security.md) |
 | **styles.refero.design** | каталог из 2000+ дизайн-систем как референс для UI-работы | [docs/refero-design.md](docs/refero-design.md) |
 
-Higgsfield, ECC, Graphify и UI UX Pro Max установлены прямо в этот репозиторий (`.claude/`, `.agents/`) и подхватываются автоматически при открытии его в Claude Code — подробности в соответствующем файле. Headroom — CLI-инструмент уровня машины (прокси/MCP), его нужно ставить и настраивать на своей машине отдельно, см. `docs/headroom.md`. Remotion — отдельный видео-проект в папке [`remotion/`](remotion), см. `docs/remotion.md`.
+Higgsfield, ECC, Graphify, UI UX Pro Max и Phoenix Security установлены прямо в этот репозиторий (`.claude/`, `.agents/`) и подхватываются автоматически при открытии его в Claude Code — подробности в соответствующем файле. Headroom — CLI-инструмент уровня машины (прокси/MCP), его нужно ставить и настраивать на своей машине отдельно, см. `docs/headroom.md`. Remotion — отдельный видео-проект в папке [`remotion/`](remotion), см. `docs/remotion.md`.
