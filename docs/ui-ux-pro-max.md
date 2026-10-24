@@ -114,3 +114,55 @@ uipro uninstall --global # удалить глобальную установк�
 ```
 
 Требование — Python 3.x (только стандартная библиотека, ничего не ставит и никуда не стучится по сети), проверить: `python3 --version`.
+
+---
+
+## Справочник команд
+
+### CLI `uipro` (установка/управление skill'ом)
+
+#### `uipro init`
+- **Что делает:** ставит skill в проект или глобально.
+- **Синтаксис:** `uipro init --ai <платформа> [--global] [--force] [--offline]`
+- **Ключевые флаги:**
+  - `--ai claude|cursor|windsurf|codex|gemini|...` — под какой AI-инструмент ставить (20+ вариантов)
+  - `--global` — в `~/.claude/skills/` (все проекты на машине) вместо project-local
+  - `--force` — перезаписать существующие файлы
+  - `--offline` — поставить из вшитых в CLI шаблонов, не скачивая свежую версию с GitHub
+- **Пример:** `uipro init --ai claude` (так установлено здесь, project-local)
+
+#### `uipro update`
+- **Что делает:** обновляет уже установленный skill до последней версии CLI-пакета.
+- **Синтаксис:** `uipro update [--global]`
+
+#### `uipro uninstall`
+- **Что делает:** удаляет skill.
+- **Синтаксис:** `uipro uninstall [--ai <платформа>] [--global]`
+- **Пример:** `uipro uninstall --ai claude` — удалить только для Claude Code, оставив остальные платформы, если ставил на несколько
+
+#### `uipro versions`
+- **Что делает:** печатает список доступных версий датасета/skill'а.
+
+### `search.py` — поисковый движок напрямую (минуя диалог с Claude)
+
+**Базовый синтаксис:** `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<запрос>" [флаги]`
+
+#### `--design-system`
+- **Что делает:** вместо точечного поиска — генерирует целую дизайн-систему под продукт (паттерн страницы + стиль + палитра + типографика + анти-паттерны + чек-лист).
+- **Доп. флаги:** `-p "Название проекта"` (для подписи/сохранения), `-f markdown|ascii` (формат вывода, по умолчанию ASCII-таблица)
+- **Пример:** `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "fintech banking" --design-system -f markdown`
+
+#### `--design-system --persist`
+- **Что делает:** то же самое, но сохраняет результат на диск в `design-system/<slug>/MASTER.md` — чтобы не пересчитывать дизайн-систему заново в каждой новой сессии/на каждой странице.
+- **Доп. флаг:** `--page "dashboard"` — сохранить не в `MASTER.md`, а как override для конкретной страницы (`pages/dashboard.md`), который приоритетнее мастер-файла
+- **Пример:** `python3 .../search.py "SaaS dashboard" --design-system --persist -p "MyApp" --page "dashboard"`
+
+#### `--domain <область>`
+- **Что делает:** точечный поиск только в одной конкретной области базы, а не генерация целой дизайн-системы.
+- **Допустимые значения:** `style` (UI-стили), `typography` (пары шрифтов), `chart` (типы графиков), `ux` (UX-гайдлайны/anti-patterns), `icons` (иконки)
+- **Пример:** `python3 .../search.py "glassmorphism" --domain style`
+
+#### `--stack <технология>`
+- **Что делает:** поиск гайдлайнов именно под конкретный технологический стек, а не общих.
+- **Примеры значений:** `react`, `vue`, `nextjs`, `html-tailwind`, `swiftui`, `flutter`, `jetpack-compose`, `javafx` (всего 22 стека)
+- **Пример:** `python3 .../search.py "form validation" --stack react`

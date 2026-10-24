@@ -99,28 +99,61 @@ export const MyComponent: React.FC = () => {
 
 Для «пачки видео под разных людей» — передаёшь в `<Composition>` пропы с данными (имя, число) через `defaultProps` или `calculateMetadata`, и рендеришь одну и ту же композицию много раз с разным входом, вместо того чтобы переписывать код под каждое видео.
 
-## Если понадобится рендер в облаке (Google Cloud Run)
-
-Изначально вопрос был про это — если решишь рендерить не локально, а в GCP (для больших объёмов/масштабирования), ставится отдельным пакетом внутрь этого же проекта:
-
-```bash
-cd remotion
-npx remotion add @remotion/cloudrun
-```
-
-Дальше нужен отдельный **GCP-проект с включённым биллингом**:
-
-```bash
-gcloud auth application-default login
-npx remotion cloudrun services deploy   # разворачивает Cloud Run сервис
-npx remotion cloudrun sites create      # выкладывает проект в Cloud Storage
-npx remotion cloudrun render <serve-url> <composition-id>
-```
-
-⚠️ Это отдельная инфраструктура с отдельным биллингом на стороне Google — не делается по умолчанию, статус этой фичи у Remotion сейчас **Alpha**. Локальный рендер (`npx remotion render`) для большинства задач достаточен и ничего этого не требует.
+Рендер в облаке (Google Cloud Run) — опционально, статус Alpha — описан в справочнике команд ниже.
 
 ## Документация
 
 - [remotion.dev/docs/the-fundamentals](https://www.remotion.dev/docs/the-fundamentals) — с чего начать
 - [remotion.dev/docs/cli](https://www.remotion.dev/docs/cli) — все команды CLI
 - [Discord](https://discord.gg/6VzzNDwUwV) — помощь от сообщества
+
+---
+
+## Справочник команд
+
+Все команды выполняются из папки `remotion/` (`cd remotion` сначала).
+
+#### `npm run dev` (= `remotion studio`)
+- **Что делает:** открывает Remotion Studio — визуальный редактор-превью в браузере с таймлайном, плеером и live-reload при правке кода.
+- **Когда использовать:** всегда первым шагом, когда пишешь/правишь композицию — видишь результат сразу, без рендера.
+
+#### `npx remotion render`
+- **Что делает:** рендерит композицию в готовый видеофайл (MP4 по умолчанию).
+- **Синтаксис:** `npx remotion render [composition-id] [output-location] [флаги]`
+- **Ключевые флаги:**
+  - без аргументов — рендерит первую композицию в `out/<id>.mp4`
+  - `npx remotion render MyComp out/final.mp4` — конкретная композиция в конкретный файл
+  - `--codec h264|h265|vp8|vp9|prores|gif` — формат кодирования
+  - `--crf <число>` — качество/сжатие (меньше число = выше качество, больше файл)
+  - `--frames 0-99` — отрендерить только диапазон кадров, а не всё видео
+  - `--concurrency <N>` — сколько кадров рендерить параллельно (быстрее на многоядерной машине)
+  - `--props '{"name":"Иван"}'` — передать данные в композицию снаружи, не меняя код (для «пачки персонализированных видео»)
+- **Пример:** `npx remotion render MyComp out/ivan.mp4 --props '{"name":"Иван"}'`
+
+#### `npx remotion still`
+- **Что делает:** рендерит один конкретный кадр как картинку (PNG/JPEG), а не всё видео.
+- **Синтаксис:** `npx remotion still [composition-id] [output.png] [--frame <номер>]`
+- **Пример:** `npx remotion still MyComp out/frame.png --frame 45`
+- **Когда использовать:** нужен превью-кадр для обложки/тамбнейла, не весь ролик.
+
+#### `npx remotion compositions`
+- **Что делает:** печатает список всех композиций, объявленных в `src/Root.tsx`, с их id, длительностью, разрешением.
+- **Когда использовать:** проверить, что видно Remotion, перед рендером конкретной по имени.
+
+#### `npx remotion bundle`
+- **Что делает:** собирает проект в статический бандл (используется внутри `render`/`still`, но можно вызвать отдельно для кэширования/CI).
+
+#### `npx remotion upgrade`
+- **Что делает:** обновляет `remotion` и все пакеты `@remotion/*` до последней совпадающей версии одной командой (версии должны совпадать друг с другом — руками обновлять рискованно).
+
+#### `npx remotion add <пакет>`
+- **Что делает:** добавляет официальный Remotion-пакет (например `@remotion/cloudrun`, `@remotion/lottie`, `@remotion/captions`) с правильной, совпадающей версией.
+- **Пример:** `npx remotion add @remotion/cloudrun`
+
+#### Облачный рендер (`@remotion/cloudrun`, после `npx remotion add @remotion/cloudrun`)
+
+- **`npx remotion cloudrun services deploy`** — разворачивает Cloud Run сервис на твоём GCP-проекте
+- **`npx remotion cloudrun sites create`** — выкладывает текущий проект в Google Cloud Storage
+- **`npx remotion cloudrun render <serve-url> <composition-id>`** — запускает рендер в облаке вместо локальной машины
+
+Нужен отдельный **GCP-проект с биллингом** и `gcloud auth application-default login` — статус фичи **Alpha**, для большинства задач локального `npx remotion render` достаточно.
