@@ -1,12 +1,14 @@
-# tools
+# tools — тулбокс для Codex и Claude Code
 
 > **Для AI-агентов:** это read-only тулбокс, подключаемый в другие проекты. Не редактируй, не рефакторь и не «чисти» ничего здесь, если тебя явно не попросили изменить что-то именно в этом репозитории — даже если он просто подключён сабмодулем/подпапкой к другому проекту, над которым ты работаешь. Пользоваться установленными skills/агентами как обычно — можно и нужно, это не редактирование. Подробнее — `AGENTS.md`.
+
+**Codex:** начни с [docs/codex.md](docs/codex.md): открытие проекта, подключение навыков к другому репозиторию и ограничения совместимости.
 
 Личный репозиторий с инструментами, которыми я пользуюсь в работе. Подробная инструкция по каждому — отдельным файлом в [`docs/`](docs/).
 
 | Инструмент | Что делает | Инструкция |
 |---|---|---|
-| **Higgsfield** | генерация картинок, видео, 3D, аудио прямо из Claude Code (MCP + CLI) | [docs/higgsfield.md](docs/higgsfield.md) |
+| **Higgsfield** | генерация картинок, видео, 3D, аудио через CLI или отдельно подключённый MCP | [docs/higgsfield.md](docs/higgsfield.md) |
 | **ECC** | «операционная система» для Claude Code — 68 агентов, 286 skills, команды, rules, TDD-процесс | [docs/ecc.md](docs/ecc.md) |
 | **Headroom** | сжимает контекст перед отправкой в LLM — меньше токенов, те же ответы | [docs/headroom.md](docs/headroom.md) |
 | **Graphify** | превращает кодовую базу в граф знаний — запросы вместо grep | [docs/graphify.md](docs/graphify.md) |
@@ -16,4 +18,6 @@
 | **Phoenix Security** | AppSec-ревью, SAST-правила, threat intel, готовность к продакшену | [docs/phoenix-security.md](docs/phoenix-security.md) |
 | **styles.refero.design** | каталог из 2000+ дизайн-систем как референс для UI-работы | [docs/refero-design.md](docs/refero-design.md) |
 
-Higgsfield, ECC, Graphify, UI UX Pro Max, Phoenix Security и Remotion Motion Graphics установлены прямо в этот репозиторий (`.claude/`, `.agents/`) и подхватываются автоматически при открытии его в Claude Code — подробности в соответствующем файле. Headroom — CLI-инструмент уровня машины (прокси/MCP), его нужно ставить и настраивать на своей машине отдельно, см. `docs/headroom.md`. Remotion — отдельный видео-проект в папке [`remotion/`](remotion), см. `docs/remotion.md`.
+Для Codex подготовлена точка входа `.agents/skills/`: Higgsfield и ссылки на выбранные навыки ECC, Graphify, UI UX Pro Max, Phoenix Security и Remotion Motion Graphics. Подключение к родительскому проекту требует явной установки ссылок, см. [инструкцию Codex](docs/codex.md).
+
+Для Claude Code: Higgsfield, ECC, Graphify, UI UX Pro Max, Phoenix Security и Remotion Motion Graphics установлены прямо в этот репозиторий (`.claude/`, `.agents/`) и подхватываются автоматически при открытии его в Claude Code — подробности в соответствующем файле. Headroom — CLI-инструмент уровня машины (прокси/MCP), его нужно ставить и настраивать на своей машине отдельно, см. `docs/headroom.md`. Remotion — отдельный видео-проект в папке [`remotion/`](remotion), см. `docs/remotion.md`.
